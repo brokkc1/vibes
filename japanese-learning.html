@@ -19,7 +19,7 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 h1{font-size:1.35rem;margin:0;font-weight:700;letter-spacing:-.01em}
 #count{display:flex;align-items:center;gap:8px;color:var(--mute);font-size:.9rem}
 .num{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 6px;border-radius:50%;border:2.5px solid var(--accent);color:var(--ink);font-weight:700;font-size:.95rem}
-.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tabs{display:flex;gap:8px;margin-bottom:16px}
 .seg{flex:1;display:flex;background:var(--tint);border-radius:12px;padding:4px}
 .seg button{flex:1;border:0;background:transparent;border-radius:9px;padding:10px 4px;font-size:.88rem;font-weight:500;color:var(--mute)}
 .seg button.on{background:var(--paper);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
@@ -32,7 +32,8 @@ button:focus-visible,.scene:focus-visible,.grip:focus-visible,input:focus-visibl
 .deckbtn span:last-child{color:var(--mute);font-size:1.2rem}
 .bar{height:4px;background:var(--line);border-radius:2px;margin-bottom:16px}
 .bar i{display:block;height:100%;background:var(--accent);border-radius:2px;width:0;transition:width .25s}
-.scene{height:370px;perspective:1200px;cursor:pointer}
+.scene{position:relative;height:370px;perspective:1200px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.scene .sbadge{border-radius:20px}
 .card{position:relative;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
 .card.flipped{transform:rotateY(180deg)}
 .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;display:flex;flex-direction:column;justify-content:center;padding:56px 28px 44px;gap:8px;overflow:auto}
@@ -46,7 +47,7 @@ button:focus-visible,.scene:focus-visible,.grip:focus-visible,input:focus-visibl
 .roma{font-size:1.1rem;opacity:.8}
 b{font-weight:700;text-decoration:underline;text-decoration-thickness:2.5px;text-underline-offset:4px;text-decoration-color:var(--accent)}
 .back b{text-decoration-color:var(--hi)}
-.row{display:flex;gap:10px;margin-top:16px;align-items:stretch}
+.row{display:flex;gap:10px;margin-top:16px;align-items:stretch;justify-content:center}
 .row .main{flex:1;height:50px;font-weight:500}
 .chips{display:flex;gap:8px;margin-top:12px;justify-content:center}
 .chips button{padding:8px 14px;border-radius:20px;font-size:.88rem;color:var(--mute)}
@@ -73,7 +74,7 @@ b{font-weight:700;text-decoration:underline;text-decoration-thickness:2.5px;text
 .item .scr{border-top:1px solid var(--line);padding-top:8px;margin-top:8px}
 .sinfo{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--mute);font-size:.9rem}
 .stack{position:relative}
-.stack .item{position:relative;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;transition:transform .25s,opacity .25s}
+.stack .item{position:relative;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;transition:transform .25s,opacity .25s}
 .stack .item.under{position:absolute;inset:0;transform:translateY(10px) scale(.96);opacity:.5;pointer-events:none;cursor:auto}
 .sbadge{position:absolute;inset:0;opacity:0;z-index:3;pointer-events:none}
 .sbadge.pos{background:var(--accent)}
@@ -115,6 +116,7 @@ select{font:inherit;padding:12px;border-radius:12px;border:1px solid var(--line)
 .ptools{display:flex;gap:8px}
 .ptools button{padding:8px 12px;font-size:.85rem;border-radius:10px}
 .pgo{margin-top:8px;height:52px;font-weight:500}
+.padd{margin:8px 0 4px;width:100%;border-style:dashed;color:var(--accent);font-weight:500}
 .dact{display:flex;justify-content:flex-end;margin-top:22px}
 .warn{background:var(--tint);border-radius:12px;padding:12px 14px;font-size:.88rem;color:var(--ink);margin:0}
 dialog.sheet{padding:0;width:min(94vw,520px);height:min(86vh,680px)}
@@ -162,8 +164,6 @@ button.fspeed.na{padding:12px 18px;color:var(--mute);font-size:.88rem;white-spac
   <div class="seg" role="tablist"><button id="tabrev" role="tab">Revision</button><button id="tabfc" role="tab">Flashcards</button><button id="tabstudy" role="tab">Study</button></div>
   <button id="menu" class="sq" aria-label="Settings"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 </div>
-<button id="deckbtn" class="deckbtn"><span id="decktxt"></span><span aria-hidden="true">›</span></button>
-<div id="empty" class="done" hidden><h3>No cards selected</h3><p>Choose at least one card to start studying.</p><button id="emptybtn" class="solid">Choose cards</button></div>
 <div id="fcview">
   <div class="bar"><i id="prog"></i></div>
   <div class="scene" id="scene" tabindex="0" role="button" aria-label="Flip card">
@@ -171,13 +171,13 @@ button.fspeed.na{padding:12px 18px;color:var(--mute);font-size:.88rem;white-spac
       <div class="face front"><span class="lab" id="flab"></span><div class="tpl" id="star"></div><div class="q" id="q"></div><span class="tap">Tap to flip</span></div>
       <div class="face back"><span class="lab">Say it</span><div class="pron" id="pron"></div><div class="roma" id="roma"></div><div class="scr" id="scr"></div><span class="tap">Tap to flip</span></div>
     </div>
+    <div class="sbadge" id="fbadge"></div>
   </div>
   <div class="row">
-    <button id="prev" class="main">Previous</button>
     <button id="spk" class="sq solid" aria-label="Speak" data-spk="1"></button>
-    <button id="next" class="main">Next</button>
   </div>
   <div class="chips"><button id="shuf">Shuffle</button><button id="rev">Japanese first</button></div>
+  <p class="shint">Swipe left if it was hard, right if it was easy. Harder cards come back more often.</p>
 </div>
 <div id="studyview" hidden>
   <div class="sinfo" id="sinfo"><span id="sprog"></span><button id="send" class="endbtn">End session</button></div>
@@ -200,12 +200,6 @@ button.fspeed.na{padding:12px 18px;color:var(--mute);font-size:.88rem;white-spac
   <div class="dact"><button id="done" class="solid">Done</button></div>
 </dialog>
 
-<dialog id="deckdlg" class="sheet" aria-labelledby="dtitle">
-  <div class="dh"><h2 id="dtitle">Choose cards to study</h2><button class="x" id="deckx" aria-label="Close">×</button></div>
-  <div class="dtabs" id="dtabs" role="tablist"></div>
-  <div class="dpanel" id="dpanel" role="tabpanel"></div>
-  <div class="dfoot"><span id="dcount"></span><button id="deckdone" class="solid">Done</button></div>
-</dialog>
 <script>
 var CATS=["Greetings","Shopping","Directions","Help","Templates","My cards"];
 var RAW=[
@@ -268,15 +262,25 @@ var pos=Math.max(+S.pos||0,0),jpFirst=!!S.jp,flipped=!!S.flipped,mode=(S.mode===
 var scripts=S.scripts!==false,cover=!!S.cover,voiceId=S.voice||null,scrollY0=+S.scroll||0;
 var speed=[1,0.75,0.5].indexOf(+S.speed)>=0?+S.speed:1;
 var W={};if(S.w&&typeof S.w==="object")Object.keys(S.w).forEach(function(k){if(byId[k])W[k]=clampW(Math.round(+S.w[k]||0))});
-var pickSel=Array.isArray(S.pick)?S.pick:null;
-var sess=null,sbusy=false,dirty=false,deckTab="Greetings",addOpen=false,deckMsg="";
+var sess=null,sbusy=false,openCats={},addIn=null,pickMsg="";
 function catOf(c){return CATS.indexOf(c.cat)>=0?c.cat:"My cards"}
-function catIds(cats){return deck(rorder).filter(function(id){return cats.indexOf(catOf(byId[id]))>=0})}
-function catLab(c){return c.length===1?c[0]:c.length===2?c.join(" and "):c.length+" categories"}
-function sessOK(x){if(!x||!Array.isArray(x.cats)||!x.cats.length||!Array.isArray(x.order))return false;var d=catIds(x.cats);return x.order.length===d.length&&x.i>=0&&x.i<=x.order.length&&x.order.every(function(id){return d.indexOf(id)>=0})}
-if(Array.isArray(S.sorder)&&Number.isInteger(S.si)){sess={cats:S.scats,order:S.sorder,i:S.si};if(!sessOK(sess))sess=null}
-function save(){store.set(KEY,JSON.stringify({mode:mode,order:forder,pos:pos,jp:jpFirst,flipped:flipped,rorder:rorder,cover:cover,voice:voiceId,speed:speed,scripts:scripts,w:W,scats:sess?sess.cats:null,pick:pickSel,sorder:sess?sess.order:null,si:sess?sess.i:0,custom:custom,sel:Object.keys(selMap),scroll:mode==="rev"?Math.round(window.scrollY):scrollY0}))}
 
+function catLab(c){return c.length===1?c[0]:c.length===2?c.join(" and "):c.length+" categories"}
+function sessOK(x){return !!x&&Array.isArray(x.order)&&x.order.length===deck(rorder).length&&x.i>=0&&x.i<=x.order.length&&x.order.every(function(id){return selMap[id]})}
+if(Array.isArray(S.sorder)&&Number.isInteger(S.si)){sess={order:S.sorder,i:S.si};if(!sessOK(sess))sess=null}
+function save(){store.set(KEY,JSON.stringify({mode:mode,order:forder,fdeck:fdeck,pos:pos,jp:jpFirst,flipped:flipped,rorder:rorder,cover:cover,voice:voiceId,speed:speed,scripts:scripts,w:W,sorder:sess?sess.order:null,si:sess?sess.i:0,custom:custom,sel:Object.keys(selMap),scroll:mode==="rev"?Math.round(window.scrollY):scrollY0}))}
+
+function reps(id){var v=W[id]||0;return v<=-6?4:v<=-3?3:v<=-1?2:1}
+function buildFlashDeck(){
+  var out=[];
+  recon(forder).forEach(function(id){for(var k=0;k<reps(id);k++)out.push({id:id,key:(W[id]||0)+Math.random()*3+k*1.5})});
+  out.sort(function(a,b){return a.key-b.key});
+  var ids=out.map(function(o){return o.id});
+  for(var i=1;i<ids.length;i++){if(ids[i]===ids[i-1]){for(var j=i+1;j<ids.length;j++){if(ids[j]!==ids[i-1]&&ids[j]!==ids[i+1]){var t=ids[i];ids[i]=ids[j];ids[j]=t;break}}}}
+  return ids;
+}
+var fdeck=(Array.isArray(S.fdeck)&&S.fdeck.length&&S.fdeck.every(function(id){return byId[id]}))?S.fdeck:buildFlashDeck();
+if(pos>=fdeck.length)pos=0;
 var SPK="<svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M11 5L6 9H2v6h4l5 4V5z'/><path d='M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13'/></svg>";
 var DOTS="<svg width='18' height='30' viewBox='0 0 18 30' fill='currentColor' aria-hidden='true'><circle cx='9' cy='6' r='2.5'/><circle cx='9' cy='15' r='2.5'/><circle cx='9' cy='24' r='2.5'/></svg>";
 function scHTML(c){
@@ -312,9 +316,8 @@ function speak(c){
   ss.cancel();ss.speak(u);
 }
 function current(){
-  var d=deck(rorder);
   if(mode==="study"&&sess&&sess.i<sess.order.length)return byId[sess.order[sess.i]];
-  if(mode==="fc"){var a=deck(forder);return a.length?byId[a[Math.min(pos,a.length-1)]]:null}
+  if(mode==="fc"){var a=fdeck;return a.length?byId[a[Math.min(pos,a.length-1)]]:null}
   return null;
 }
 function speakCurrent(){var c=current();if(c)speak(c)}
@@ -332,11 +335,13 @@ function spkBtn(c,cls){
 /* flashcards */
 $("spk").innerHTML=SPK;
 $("spk").onclick=function(e){e.stopPropagation();speakCurrent()};
-function render(){
-  var a=deck(forder);if(!a.length)return;
+function render(na){
+  var a=fdeck;if(!a.length)return;
   pos=Math.min(pos,a.length-1);
   var c=byId[a[pos]];
-  $("card").classList.toggle("flipped",flipped);
+  var cd=$("card");if(na)cd.style.transition="none";
+  cd.classList.toggle("flipped",flipped);
+  if(na){void cd.offsetWidth;cd.style.transition=""}
   $("star").textContent=isTpl(c)?"Fill-in template":"";
   $("flab").textContent=jpFirst?"Japanese":"English";
   $("q").textContent=jpFirst?(c.ro||c.jp):c.en;
@@ -346,21 +351,46 @@ function render(){
   $("prog").style.width=((pos+1)/a.length*100)+"%";
   if(mode==="fc")$("count").innerHTML="<span class='num'>"+(pos+1)+"</span><span>of "+a.length+"</span>";
 }
-$("scene").onclick=function(){flipped=!flipped;$("card").classList.toggle("flipped",flipped);save()};
-function go(n){var L=deck(forder).length;if(!L)return;pos=(pos+n+L)%L;flipped=false;render();save()}
+$("scene").onclick=function(){if(Math.abs(fdx)>=6){fdx=0;return}flipped=!flipped;$("card").classList.toggle("flipped",flipped);save()};
+function go(n){
+  var L=fdeck.length;if(!L)return;
+  if(n>0&&pos+n>=L){fdeck=buildFlashDeck();pos=0}else pos=(pos+n+L)%L;
+  flipped=false;render(true);save();
+}
+var fdx=0,fsx=0,fdrag=false,fbusy=false;
+function fbadge(v){var b=$("fbadge");b.className="sbadge "+(v>0?"pos":"n");b.style.opacity=Math.min(Math.abs(v)/90,1)*0.3}
+function fcommit(d){
+  if(fbusy||mode!=="fc")return;
+  fbusy=true;var sc=$("scene"),id=fdeck[pos];
+  sc.style.transition="transform .25s,opacity .25s";
+  sc.style.transform="translateX("+(d*520)+"px) rotate("+(d*18)+"deg)";sc.style.opacity="0";
+  setTimeout(function(){
+    W[id]=clampW((W[id]||0)+d);
+    if(pos+1>=fdeck.length){fdeck=buildFlashDeck();pos=0}else pos++;
+    flipped=false;
+    sc.style.transition="none";sc.style.transform="";sc.style.opacity="";fdx=0;$("fbadge").style.opacity=0;
+    render(true);save();fbusy=false;
+    requestAnimationFrame(function(){sc.style.transition=""});
+  },230);
+}
+(function(){
+  var sc=$("scene");
+  sc.onpointerdown=function(e){if(fbusy||e.target.closest("button"))return;fdrag=true;fsx=e.clientX;fdx=0;try{sc.setPointerCapture(e.pointerId)}catch(_){}sc.style.transition="none"};
+  sc.onpointermove=function(e){if(!fdrag)return;fdx=e.clientX-fsx;sc.style.transform="translateX("+fdx+"px) rotate("+(fdx/30)+"deg)";fbadge(fdx)};
+  var up=function(){
+    if(!fdrag)return;fdrag=false;sc.style.transition="";
+    if(fdx>100)fcommit(1);else if(fdx<-100)fcommit(-1);else{sc.style.transform="";fbadge(0)}
+  };
+  sc.onpointerup=up;sc.onpointercancel=up;
+})();
 document.addEventListener("keydown",function(e){
-  if($("dlg").open||$("deckdlg").open)return;
+  if($("dlg").open)return;
   if(mode==="study"){if(e.key==="ArrowLeft")commit(-1);else if(e.key==="ArrowRight")commit(1);return}
   if(mode!=="fc")return;
   if(e.key===" "||e.key==="Enter"){if(document.activeElement.tagName!=="BUTTON"){e.preventDefault();$("scene").click()}}
-  else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1);
+  else if(e.key==="ArrowRight")fcommit(1);else if(e.key==="ArrowLeft")fcommit(-1);
 });
-$("next").onclick=function(){go(1)};
-$("prev").onclick=function(){go(-1)};
-$("shuf").onclick=function(){
-  for(var i=forder.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=forder[i];forder[i]=forder[j];forder[j]=t}
-  pos=0;flipped=false;render();save();
-};
+$("shuf").onclick=function(){fdeck=buildFlashDeck();pos=0;flipped=false;render(true);save()};
 function syncRev(){$("rev").classList.toggle("on",jpFirst);$("rev").textContent=jpFirst?"English first":"Japanese first"}
 $("rev").onclick=function(){jpFirst=!jpFirst;flipped=false;render();syncRev();save()};
 
@@ -382,12 +412,12 @@ function mkItem(c){
 var list=$("list");
 function buildList(){
   list.innerHTML="";
-  deck(rorder).forEach(function(id){
+  rorder.forEach(function(id){
     var c=byId[id],it=mkItem(c);
     var g=document.createElement("div");g.className="grip";g.innerHTML=DOTS;g.setAttribute("aria-label","Drag to reorder");g.setAttribute("role","img");
     var ph=null,off=0;
     g.onpointerdown=function(e){
-      e.preventDefault();g.setPointerCapture(e.pointerId);
+      e.preventDefault();try{g.setPointerCapture(e.pointerId)}catch(_){}
       var r=it.getBoundingClientRect();off=e.clientY-r.top;
       ph=document.createElement("div");ph.className="ph";ph.style.height=r.height+"px";
       it.after(ph);
@@ -412,9 +442,7 @@ function buildList(){
       if(!ph)return;
       ph.replaceWith(it);ph=null;
       it.classList.remove("drag");it.style.width="";it.style.left="";it.style.top="";
-      var vis=[].slice.call(list.querySelectorAll(".item")).map(function(n){return n.dataset.id}),slots=[];
-      rorder.forEach(function(x,i){if(selMap[x])slots.push(i)});
-      vis.forEach(function(x,k){rorder[slots[k]]=x});
+      rorder=[].slice.call(list.querySelectorAll(".item")).map(function(n){return n.dataset.id});
       save();
     };
     g.onpointerup=end;g.onpointercancel=end;
@@ -425,9 +453,9 @@ function buildList(){
 }
 
 /* study mode */
-function startSession(cats){
+function startSession(){
   var pos0={};rorder.forEach(function(id,i){pos0[id]=i});
-  sess={cats:cats,order:catIds(cats).sort(function(a,b){return ((W[b]||0)-(W[a]||0))||(pos0[a]-pos0[b])}),i:0};save();
+  sess={order:deck(rorder).sort(function(a,b){return ((W[a]||0)-(W[b]||0))||(pos0[a]-pos0[b])}),i:0};save();
 }
 function commit(d){
   if(sbusy||!sess||sess.i>=sess.order.length||mode!=="study")return;
@@ -437,54 +465,100 @@ function commit(d){
   top.style.transform="translateX("+(d*520)+"px) rotate("+(d*18)+"deg)";top.style.opacity="0";
   setTimeout(function(){W[id]=clampW((W[id]||0)+d);sess.i++;sbusy=false;save();renderStudy()},230);
 }
+function catCards(cat){return ALL.filter(function(c){return catOf(c)===cat})}
 function showPicker(){
-  $("sinfo").hidden=true;$("shint").hidden=true;
-  $("count").innerHTML="<span>"+deck(rorder).length+" cards</span>";
-  var avail=CATS.filter(function(c){return catIds([c]).length});
-  var chosen=(pickSel||avail).filter(function(c){return avail.indexOf(c)>=0});
+  $("stack").innerHTML="";$("sinfo").hidden=true;$("shint").hidden=true;
+  var msg=pickMsg,msgCat=addIn&&addIn.msgCat;pickMsg="";
   var box=document.createElement("div");box.className="pick";
-  box.innerHTML="<h3>What do you want to study?</h3><p class='phint'>Choose one or more categories. Only enabled cards are included.</p><div class='ptools'><button id='pall'>Select all</button><button id='pnone'>Clear</button></div>";
-  var rows=[],go=document.createElement("button");go.className="solid pgo";
+  box.innerHTML="<h3>What do you want to study?</h3><p class='phint'>Tick categories or individual phrases. Expand a category to choose phrases or add your own.</p><div class='ptools'><button id='pall'>Select all</button><button id='pnone'>Clear</button></div>";
+  var go=document.createElement("button");go.className="solid pgo";
+  var rows=[];
   function upd(){
-    var n=catIds(chosen).length;
-    go.textContent=n?"Start session ("+n+(n===1?" card)":" cards)"):"Choose a category";go.disabled=!n;
-    rows.forEach(function(r){r.row.classList.toggle("on",r.cb.checked)});
-    pickSel=chosen.slice();save();
+    var n=Object.keys(selMap).length;
+    $("count").innerHTML="<span>"+n+" selected</span>";
+    go.textContent=n?"Start session ("+n+(n===1?" card)":" cards)"):"Select at least one phrase";go.disabled=!n;
+    rows.forEach(function(r){
+      var cs=catCards(r.cat),k=cs.filter(function(c){return selMap[c.id]}).length;
+      r.cb.disabled=!cs.length;r.cb.checked=cs.length>0&&k===cs.length;r.cb.indeterminate=k>0&&k<cs.length;
+      r.small.textContent=k+" of "+cs.length;r.wrap.classList.toggle("on",k>0);
+    });
+    save();
   }
-  avail.forEach(function(cat){
-    var ids=catIds([cat]),n=ids.length;
+  CATS.forEach(function(cat){
+    var cs=catCards(cat);
     var wrap=document.createElement("div");wrap.className="pcat";
     var row=document.createElement("label");row.className="prow";
-    var cb=document.createElement("input");cb.type="checkbox";cb.checked=chosen.indexOf(cat)>=0;
-    row.innerHTML="<span></span><small>"+n+(n===1?" card":" cards")+"</small>";
+    var cb=document.createElement("input");cb.type="checkbox";
+    row.innerHTML="<span></span><small></small>";
     row.firstChild.textContent=cat;row.insertBefore(cb,row.firstChild);
-    var chev=document.createElement("button");chev.className="pchev";chev.setAttribute("aria-expanded","false");chev.setAttribute("aria-label","Show phrases in "+cat);
+    var chev=document.createElement("button");chev.className="pchev";
     chev.innerHTML="<svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M6 9l6 6 6-6'/></svg>";
-    var pl=document.createElement("div");pl.className="plist";pl.hidden=true;
-    ids.forEach(function(id){var c=byId[id],it=document.createElement("div");it.className="pi";it.innerHTML="<span class='ce'></span><span class='cj'></span>";it.querySelector(".ce").textContent=c.en;it.querySelector(".cj").textContent=c.jp;pl.appendChild(it)});
-    chev.onclick=function(e){e.preventDefault();e.stopPropagation();var open=pl.hidden;pl.hidden=!open;chev.setAttribute("aria-expanded",String(open));chev.classList.toggle("open",open);chev.setAttribute("aria-label",(open?"Hide":"Show")+" phrases in "+cat)};
-    row.appendChild(chev);
-    cb.onchange=function(){chosen=CATS.filter(function(c){return c===cat?cb.checked:chosen.indexOf(c)>=0});upd()};
-    wrap.appendChild(row);wrap.appendChild(pl);
-    rows.push({row:wrap,cb:cb});box.appendChild(wrap);
+    var pl=document.createElement("div");pl.className="plist";
+    function sync(){var o=!!openCats[cat];pl.hidden=!o;chev.classList.toggle("open",o);chev.setAttribute("aria-expanded",String(o));chev.setAttribute("aria-label",(o?"Hide":"Show")+" phrases in "+cat)}
+    chev.onclick=function(e){e.preventDefault();e.stopPropagation();openCats[cat]=!openCats[cat];sync()};
+    cb.onchange=function(){cs.forEach(function(c){if(cb.checked)selMap[c.id]=true;else delete selMap[c.id]});[].slice.call(pl.querySelectorAll(".crow input")).forEach(function(i){i.checked=cb.checked});upd()};
+    row.appendChild(chev);wrap.appendChild(row);wrap.appendChild(pl);
+    if(msg&&msgCat===cat){var m=document.createElement("p");m.className="ok";m.setAttribute("role","status");m.textContent=msg;pl.appendChild(m)}
+    cs.forEach(function(c){
+      var r=document.createElement("label");r.className="crow";
+      var pc=document.createElement("input");pc.type="checkbox";pc.checked=!!selMap[c.id];
+      pc.onchange=function(){if(pc.checked)selMap[c.id]=true;else delete selMap[c.id];upd()};
+      var tx=document.createElement("span");tx.className="ct";tx.innerHTML="<span class='ce'></span><span class='cj'></span>";
+      tx.querySelector(".ce").textContent=c.en;tx.querySelector(".cj").textContent=c.jp;
+      r.appendChild(pc);r.appendChild(tx);
+      if(c.custom){
+        var del=document.createElement("button");del.className="del";del.textContent="Remove";del.setAttribute("aria-label","Remove "+c.en);var t;
+        del.onclick=function(e){
+          e.preventDefault();e.stopPropagation();
+          if(del.classList.contains("arm")){removeCard(c.id,cat);return}
+          del.classList.add("arm");del.textContent="Sure?";clearTimeout(t);t=setTimeout(function(){del.classList.remove("arm");del.textContent="Remove"},3000);
+        };
+        r.appendChild(del);
+      }
+      pl.appendChild(r);
+    });
+    if(!cs.length&&addIn!==cat){var e0=document.createElement("p");e0.className="muted";e0.textContent="No phrases here yet.";pl.appendChild(e0)}
+    if(addIn===cat||(addIn&&addIn.cat===cat)){
+      var f=document.createElement("div");f.className="addf";
+      f.innerHTML="<label>English<input id='fen' autocomplete='off'></label><label>Japanese<input id='fjp' lang='ja' autocomplete='off'></label><label>Romaji (optional)<input id='fro' autocomplete='off'></label><p class='err' id='ferr' role='alert' hidden></p><div class='fb'><button id='fcancel'>Cancel</button><button id='fadd' class='solid'>Add to "+esc(cat)+"</button></div>";
+      pl.appendChild(f);
+      f.querySelector("#fcancel").onclick=function(){addIn=null;showPicker()};
+      f.querySelector("#fadd").onclick=function(){addCard(cat)};
+      [].slice.call(f.querySelectorAll("input")).forEach(function(i){i.onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();addCard(cat)}}});
+    }else{
+      var ab=document.createElement("button");ab.className="padd";ab.textContent="+ Add phrase";
+      ab.onclick=function(){addIn=cat;openCats[cat]=true;showPicker();$("fen").focus()};
+      pl.appendChild(ab);
+    }
+    sync();rows.push({cat:cat,cb:cb,small:row.querySelector("small"),wrap:wrap});box.appendChild(wrap);
   });
-  go.onclick=function(){if(!chosen.length)return;startSession(chosen.slice());renderStudy()};
+  go.onclick=function(){if(!Object.keys(selMap).length)return;startSession();renderStudy()};
   box.appendChild(go);
-  var setAll=function(on){chosen=on?avail.slice():[];rows.forEach(function(r){r.cb.checked=on});upd()};
-  box.querySelector("#pall").onclick=function(){setAll(true)};
-  box.querySelector("#pnone").onclick=function(){setAll(false)};
+  box.querySelector("#pall").onclick=function(){ALL.forEach(function(c){selMap[c.id]=true});showPicker()};
+  box.querySelector("#pnone").onclick=function(){selMap={};showPicker()};
   $("stack").appendChild(box);upd();
+}
+function addCard(cat){
+  var en=$("fen").value.trim(),jp=$("fjp").value.trim(),ro=$("fro").value.trim(),err=$("ferr");
+  if(!en||!jp){err.hidden=false;err.textContent=!en?"Enter the English meaning.":"Enter the Japanese.";(!en?$("fen"):$("fjp")).focus();return}
+  var c={id:"c"+Date.now().toString(36)+Math.floor(Math.random()*1000),cat:cat,en:en,pr:"",ro:ro,jp:jp,hi:isKana(jp)?toHira(jp):"",custom:true};
+  custom.push(c);rebuild();selMap[c.id]=true;forder.push(c.id);rorder.push(c.id);
+  refreshCards();sess=null;addIn=null;openCats[cat]=true;pickMsg="Added “"+en+"”.";addIn={msgCat:cat};save();showPicker();
+}
+function removeCard(id,cat){
+  custom=custom.filter(function(c){return c.id!==id});rebuild();
+  delete selMap[id];delete W[id];refreshCards();sess=null;pickMsg="Phrase removed.";addIn={msgCat:cat};save();showPicker();
 }
 function renderStudy(){
   var st=$("stack");st.innerHTML="";
   if(!sessOK(sess)){sess=null;showPicker();return}
-  var N=sess.order.length,done=sess.i>=N,lab=catLab(sess.cats);
+  var N=sess.order.length,done=sess.i>=N,lab=catLab(CATS.filter(function(c){return sess.order.some(function(id){return catOf(byId[id])===c})}));
   $("sinfo").hidden=false;$("send").hidden=done;$("shint").hidden=done;
   $("sprog").textContent=done?"Session complete":lab+", card "+(sess.i+1)+" of "+N;
   $("count").innerHTML=done?"<span>Done</span>":"<span class='num'>"+(sess.i+1)+"</span><span>of "+N+"</span>";
   if(done){
-    st.innerHTML="<div class='done'><h3>Session complete</h3><p>You went through all "+N+" cards. Your swipes will shape the order of the next session.</p><div class='fbx'><button id='again' class='solid'>Study again</button><button id='chg'>Change categories</button></div></div>";
-    $("again").onclick=function(){startSession(sess.cats);renderStudy()};
+    st.innerHTML="<div class='done'><h3>Session complete</h3><p>You went through all "+N+" cards. Your swipes will shape the order of the next session.</p><div class='fbx'><button id='again' class='solid'>Study again</button><button id='chg'>Change selection</button></div></div>";
+    $("again").onclick=function(){startSession();renderStudy()};
     $("chg").onclick=function(){sess=null;save();renderStudy()};
     return;
   }
@@ -492,7 +566,7 @@ function renderStudy(){
   var top=mkItem(byId[sess.order[sess.i]]),b=document.createElement("div");b.className="sbadge";top.appendChild(b);
   var sx=0,dx=0,drag=false;
   function badge(v){b.className="sbadge "+(v>0?"pos":"n");b.style.opacity=Math.min(Math.abs(v)/90,1)*0.3}
-  top.onpointerdown=function(e){if(sbusy||e.target.closest("button"))return;drag=true;sx=e.clientX;dx=0;top.setPointerCapture(e.pointerId);top.style.transition="none"};
+  top.onpointerdown=function(e){if(sbusy||e.target.closest("button"))return;drag=true;sx=e.clientX;dx=0;try{top.setPointerCapture(e.pointerId)}catch(_){}top.style.transition="none"};
   top.onpointermove=function(e){if(!drag)return;dx=e.clientX-sx;top.style.transform="translateX("+dx+"px) rotate("+(dx/25)+"deg)";badge(dx)};
   var up=function(){
     if(!drag)return;drag=false;top.style.transition="";
@@ -511,28 +585,22 @@ $("wreset").onclick=function(){
 };
 
 /* modes */
-function updPill(){var n=Object.keys(selMap).length;$("decktxt").textContent="Studying "+n+" of "+ALL.length+" cards"}
 function setMode(m,restore){
   mode=m;
-  var empty=!deck(rorder).length;
-  $("empty").hidden=!empty;
-  $("fcview").hidden=empty||m!=="fc";list.hidden=empty||m!=="rev";$("studyview").hidden=empty||m!=="study";
+  $("fcview").hidden=m!=="fc";list.hidden=m!=="rev";$("studyview").hidden=m!=="study";
   ["rev","fc","study"].forEach(function(k){var t=$("tab"+k);t.classList.toggle("on",k===m);t.setAttribute("aria-selected",k===m)});
-  updPill();
-  if(empty)$("count").innerHTML="<span>0 cards</span>";
-  else if(m==="rev"){$("count").innerHTML="<span>"+deck(rorder).length+" phrases</span>";window.scrollTo(0,restore?scrollY0:0)}
+  if(m==="rev"){$("count").innerHTML="<span>"+rorder.length+" phrases</span>";window.scrollTo(0,restore?scrollY0:0)}
   else if(m==="fc"){render();window.scrollTo(0,0)}
   else{renderStudy();window.scrollTo(0,0)}
   save();
 }
+$("tabfc").onclick=function(){setMode("fc")};
+$("tabstudy").onclick=function(){setMode("study")};
 $("tabrev").onclick=function(){setMode("rev")};
 $("tabfc").onclick=function(){setMode("fc")};
 $("tabstudy").onclick=function(){setMode("study")};
 var st0;window.addEventListener("scroll",function(){if(mode!=="rev")return;clearTimeout(st0);st0=setTimeout(function(){scrollY0=Math.round(window.scrollY);save()},200)});
-function refreshAll(){
-  forder=recon(forder);rorder=recon(rorder);pos=0;flipped=false;sess=null;
-  buildList();setMode(mode);
-}
+function refreshCards(){forder=recon(forder);rorder=recon(rorder);fdeck=buildFlashDeck();pos=0;flipped=false;buildList()}
 
 /* settings dialog */
 $("scrtg").checked=scripts;
@@ -542,91 +610,6 @@ $("cover").onchange=function(){cover=this.checked;applyCover();save()};
 $("menu").onclick=function(){$("dlg").showModal()};
 $("done").onclick=function(){$("dlg").close()};
 $("dlg").addEventListener("click",function(e){if(e.target===this)this.close()});
-
-/* deck dialog */
-function catCards(cat){return ALL.filter(function(c){return (CATS.indexOf(c.cat)>=0?c.cat:"My cards")===cat})}
-function updateCounts(){
-  [].slice.call($("dtabs").children).forEach(function(b){
-    var cs=catCards(b.dataset.cat),n=cs.filter(function(c){return selMap[c.id]}).length;
-    b.innerHTML=esc(b.dataset.cat)+"<small>"+n+"/"+cs.length+"</small>";
-  });
-  var n=Object.keys(selMap).length;
-  $("dcount").textContent=n+" of "+ALL.length+" cards selected";
-  $("deckdone").disabled=n===0;
-  updPill();
-}
-function setCat(cs,on){cs.forEach(function(c){if(on)selMap[c.id]=true;else delete selMap[c.id]});dirty=true;save();renderDeck()}
-function renderDeck(){
-  var tabs=$("dtabs");tabs.innerHTML="";
-  CATS.forEach(function(cat){
-    var b=document.createElement("button");b.className="dt"+(cat===deckTab?" on":"");b.dataset.cat=cat;
-    b.setAttribute("role","tab");b.setAttribute("aria-selected",cat===deckTab);b.tabIndex=cat===deckTab?0:-1;
-    b.onclick=function(){deckTab=cat;addOpen=false;deckMsg="";renderDeck();$("dpanel").scrollTop=0};
-    tabs.appendChild(b);
-  });
-  var P=$("dpanel"),cs=catCards(deckTab);P.innerHTML="";
-  var bar=document.createElement("div");bar.className="dbar";
-  bar.innerHTML="<button id='dall'>Select all</button><button id='dnone'>Clear</button><span class='grow'></span><button id='dadd' class='solid'>+ Add card</button>";
-  P.appendChild(bar);
-  $("dall").onclick=function(){setCat(cs,true)};
-  $("dnone").onclick=function(){setCat(cs,false)};
-  $("dadd").onclick=function(){addOpen=true;deckMsg="";renderDeck();$("fen").focus()};
-  $("dall").disabled=$("dnone").disabled=!cs.length;
-  if(deckMsg){var m=document.createElement("p");m.className="ok";m.setAttribute("role","status");m.textContent=deckMsg;P.appendChild(m)}
-  if(addOpen){
-    var f=document.createElement("div");f.className="addf";
-    f.innerHTML="<label>English<input id='fen' autocomplete='off'></label><label>Japanese<input id='fjp' lang='ja' autocomplete='off'></label><label>Romaji (optional)<input id='fro' autocomplete='off'></label><p class='err' id='ferr' role='alert' hidden></p><div class='fb'><button id='fcancel'>Cancel</button><button id='fadd' class='solid'>Add to "+esc(deckTab)+"</button></div>";
-    P.appendChild(f);
-    $("fcancel").onclick=function(){addOpen=false;renderDeck()};
-    $("fadd").onclick=addCard;
-    [].slice.call(f.querySelectorAll("input")).forEach(function(i){i.onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();addCard()}}});
-  }
-  cs.forEach(function(c){
-    var row=document.createElement("label");row.className="crow";
-    var cb=document.createElement("input");cb.type="checkbox";cb.checked=!!selMap[c.id];
-    cb.onchange=function(){if(cb.checked)selMap[c.id]=true;else delete selMap[c.id];dirty=true;save();updateCounts()};
-    var tx=document.createElement("span");tx.className="ct";
-    tx.innerHTML="<span class='ce'></span><span class='cj'></span>";
-    tx.querySelector(".ce").textContent=c.en;tx.querySelector(".cj").textContent=c.jp;
-    row.appendChild(cb);row.appendChild(tx);
-    if(c.custom){
-      var del=document.createElement("button");del.className="del";del.textContent="Remove";del.setAttribute("aria-label","Remove "+c.en);
-      var t;
-      del.onclick=function(e){
-        e.preventDefault();e.stopPropagation();
-        if(del.classList.contains("arm")){removeCard(c.id);return}
-        del.classList.add("arm");del.textContent="Sure?";clearTimeout(t);t=setTimeout(function(){del.classList.remove("arm");del.textContent="Remove"},3000);
-      };
-      row.appendChild(del);
-    }
-    P.appendChild(row);
-  });
-  if(!cs.length&&!addOpen){var e=document.createElement("p");e.className="muted";e.textContent="No cards here yet. Use “Add card” to create your own.";P.appendChild(e)}
-  updateCounts();
-}
-function addCard(){
-  var en=$("fen").value.trim(),jp=$("fjp").value.trim(),ro=$("fro").value.trim(),err=$("ferr");
-  if(!en||!jp){err.hidden=false;err.textContent=!en?"Enter the English meaning.":"Enter the Japanese.";(!en?$("fen"):$("fjp")).focus();return}
-  var c={id:"c"+Date.now().toString(36)+Math.floor(Math.random()*1000),cat:deckTab,en:en,pr:"",ro:ro,jp:jp,hi:isKana(jp)?toHira(jp):"",custom:true};
-  custom.push(c);rebuild();selMap[c.id]=true;forder.push(c.id);rorder.push(c.id);
-  dirty=true;addOpen=false;deckMsg="Added “"+en+"”.";save();renderDeck();
-}
-function removeCard(id){
-  custom=custom.filter(function(c){return c.id!==id});rebuild();
-  delete selMap[id];delete W[id];forder=recon(forder);rorder=recon(rorder);
-  dirty=true;deckMsg="Card removed.";save();renderDeck();
-}
-function openDeck(){addOpen=false;deckMsg="";renderDeck();$("deckdlg").showModal()}
-$("deckbtn").onclick=openDeck;$("emptybtn").onclick=openDeck;
-$("deckdone").onclick=function(){$("deckdlg").close()};
-$("deckx").onclick=function(){$("deckdlg").close()};
-$("deckdlg").addEventListener("click",function(e){if(e.target===this)this.close()});
-$("deckdlg").addEventListener("close",function(){if(dirty){dirty=false;refreshAll()}});
-$("dtabs").addEventListener("keydown",function(e){
-  if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return;
-  var i=CATS.indexOf(deckTab)+(e.key==="ArrowRight"?1:-1);if(i<0||i>=CATS.length)return;
-  deckTab=CATS[i];addOpen=false;deckMsg="";renderDeck();$("dtabs").children[i].focus();
-});
 
 /* init */
 loadVoices();
