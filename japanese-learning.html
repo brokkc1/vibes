@@ -116,6 +116,8 @@ select{font:inherit;padding:12px;border-radius:12px;border:1px solid var(--line)
 .ptools{display:flex;gap:8px}
 .ptools button{padding:8px 12px;font-size:.85rem;border-radius:10px}
 .pgo{margin-top:8px;height:52px;font-weight:500}
+.delcat{color:var(--neg);border-color:var(--neg);border-style:solid}
+.delcat.arm{background:var(--neg);color:#fff}
 .padd{margin:8px 0 4px;width:100%;border-style:dashed;color:var(--accent);font-weight:500}
 .dact{display:flex;justify-content:flex-end;margin-top:22px}
 .warn{background:var(--tint);border-radius:12px;padding:12px 14px;font-size:.88rem;color:var(--ink);margin:0}
@@ -181,6 +183,7 @@ button.fspeed.na{padding:12px 18px;color:var(--mute);font-size:.88rem;white-spac
 </div>
 <div id="studyview" hidden>
   <div class="sinfo" id="sinfo"><span id="sprog"></span><button id="send" class="endbtn">End session</button></div>
+  <div class="bar" id="sbar" hidden><i id="sfill"></i></div>
   <div class="stack" id="stack"></div>
   <p class="shint" id="shint">Swipe the card away to the left or right.</p>
 </div>
@@ -201,7 +204,8 @@ button.fspeed.na{padding:12px 18px;color:var(--mute);font-size:.88rem;white-spac
 </dialog>
 
 <script>
-var CATS=["Greetings","Shopping","Directions","Help","Templates","My cards"];
+var BASE_CATS=["Greetings","Shopping","Directions","Help","Templates","My cards"];
+var CATS=BASE_CATS.slice();
 var RAW=[
 ["Greetings","How are you?","GEN-kee dess kah?","Genki desu ka?","元気ですか？","げんきですか？"],
 ["Greetings","How was your weekend?","SHOO-maht-soo doh desh-tah?","Shuumatsu dou deshita?","週末はどうでしたか？","しゅうまつはどうでしたか？"],
@@ -248,6 +252,8 @@ function fmt(p){return esc(p).replace(/[A-Z]{2,}/g,function(m){return "<b>"+m.to
 function isTpl(c){return c.jp.indexOf("＿＿")===0}
 
 /* cards */
+var customCats=[];(Array.isArray(S.cats)?S.cats:[]).forEach(function(n){n=typeof n==="string"?n.trim():"";if(n&&BASE_CATS.indexOf(n)<0&&customCats.indexOf(n)<0)customCats.push(n)});
+CATS=BASE_CATS.concat(customCats);
 var BASE=RAW.map(function(r,i){return {id:"b"+i,cat:r[0],en:r[1],pr:r[2],ro:r[3],jp:r[4],hi:r[5]}});
 var custom=(Array.isArray(S.custom)?S.custom:[]).filter(function(c){return c&&typeof c.id==="string"&&typeof c.en==="string"&&typeof c.jp==="string"});
 var ALL=[],byId={};
@@ -262,13 +268,13 @@ var pos=Math.max(+S.pos||0,0),jpFirst=!!S.jp,flipped=!!S.flipped,mode=(S.mode===
 var scripts=S.scripts!==false,cover=!!S.cover,voiceId=S.voice||null,scrollY0=+S.scroll||0;
 var speed=[1,0.75,0.5].indexOf(+S.speed)>=0?+S.speed:1;
 var W={};if(S.w&&typeof S.w==="object")Object.keys(S.w).forEach(function(k){if(byId[k])W[k]=clampW(Math.round(+S.w[k]||0))});
-var sess=null,sbusy=false,openCats={},addIn=null,pickMsg="";
+var sess=null,sbusy=false,openCats={},addIn=null,pickMsg="",addCatOpen=false;
 function catOf(c){return CATS.indexOf(c.cat)>=0?c.cat:"My cards"}
 
 function catLab(c){return c.length===1?c[0]:c.length===2?c.join(" and "):c.length+" categories"}
 function sessOK(x){return !!x&&Array.isArray(x.order)&&x.order.length===deck(rorder).length&&x.i>=0&&x.i<=x.order.length&&x.order.every(function(id){return selMap[id]})}
 if(Array.isArray(S.sorder)&&Number.isInteger(S.si)){sess={order:S.sorder,i:S.si};if(!sessOK(sess))sess=null}
-function save(){store.set(KEY,JSON.stringify({mode:mode,order:forder,fdeck:fdeck,pos:pos,jp:jpFirst,flipped:flipped,rorder:rorder,cover:cover,voice:voiceId,speed:speed,scripts:scripts,w:W,sorder:sess?sess.order:null,si:sess?sess.i:0,custom:custom,sel:Object.keys(selMap),scroll:mode==="rev"?Math.round(window.scrollY):scrollY0}))}
+function save(){store.set(KEY,JSON.stringify({mode:mode,order:forder,fdeck:fdeck,pos:pos,jp:jpFirst,flipped:flipped,rorder:rorder,cover:cover,voice:voiceId,speed:speed,scripts:scripts,w:W,sorder:sess?sess.order:null,si:sess?sess.i:0,custom:custom,cats:customCats,sel:Object.keys(selMap),scroll:mode==="rev"?Math.round(window.scrollY):scrollY0}))}
 
 function reps(id){var v=W[id]||0;return v<=-6?4:v<=-3?3:v<=-1?2:1}
 function buildFlashDeck(){
@@ -467,7 +473,7 @@ function commit(d){
 }
 function catCards(cat){return ALL.filter(function(c){return catOf(c)===cat})}
 function showPicker(){
-  $("stack").innerHTML="";$("sinfo").hidden=true;$("shint").hidden=true;
+  $("stack").innerHTML="";$("sinfo").hidden=true;$("shint").hidden=true;$("sbar").hidden=true;
   var msg=pickMsg,msgCat=addIn&&addIn.msgCat;pickMsg="";
   var box=document.createElement("div");box.className="pick";
   box.innerHTML="<h3>What do you want to study?</h3><p class='phint'>Tick categories or individual phrases. Expand a category to choose phrases or add your own.</p><div class='ptools'><button id='pall'>Select all</button><button id='pnone'>Clear</button></div>";
@@ -530,13 +536,49 @@ function showPicker(){
       ab.onclick=function(){addIn=cat;openCats[cat]=true;showPicker();$("fen").focus()};
       pl.appendChild(ab);
     }
+    if(customCats.indexOf(cat)>=0){
+      var dc=document.createElement("button");dc.className="padd delcat";dc.textContent="Delete category";var dtm;
+      dc.onclick=function(){
+        if(dc.classList.contains("arm")){removeCategory(cat);return}
+        dc.classList.add("arm");dc.textContent=cs.length?"Delete category and "+cs.length+(cs.length===1?" phrase?":" phrases?"):"Tap again to delete";
+        clearTimeout(dtm);dtm=setTimeout(function(){dc.classList.remove("arm");dc.textContent="Delete category"},3500);
+      };
+      pl.appendChild(dc);
+    }
     sync();rows.push({cat:cat,cb:cb,small:row.querySelector("small"),wrap:wrap});box.appendChild(wrap);
   });
+  if(addCatOpen){
+    var cf=document.createElement("div");cf.className="addf";
+    cf.innerHTML="<label>Category name<input id='cname' maxlength='30' autocomplete='off'></label><p class='err' id='cerr' role='alert' hidden></p><div class='fb'><button id='ccancel'>Cancel</button><button id='ccreate' class='solid'>Create category</button></div>";
+    box.appendChild(cf);
+    cf.querySelector("#ccancel").onclick=function(){addCatOpen=false;showPicker()};
+    cf.querySelector("#ccreate").onclick=addCategory;
+    cf.querySelector("#cname").onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();addCategory()}};
+  }else{
+    var ac=document.createElement("button");ac.className="padd";ac.textContent="+ Add category";
+    ac.onclick=function(){addCatOpen=true;showPicker();$("cname").focus()};
+    box.appendChild(ac);
+  }
   go.onclick=function(){if(!Object.keys(selMap).length)return;startSession();renderStudy()};
   box.appendChild(go);
   box.querySelector("#pall").onclick=function(){ALL.forEach(function(c){selMap[c.id]=true});showPicker()};
   box.querySelector("#pnone").onclick=function(){selMap={};showPicker()};
   $("stack").appendChild(box);upd();
+}
+function addCategory(){
+  var v=$("cname").value.trim(),err=$("cerr");
+  if(!v){err.hidden=false;err.textContent="Enter a category name.";$("cname").focus();return}
+  if(CATS.some(function(c){return c.toLowerCase()===v.toLowerCase()})){err.hidden=false;err.textContent="A category with that name already exists.";$("cname").focus();return}
+  customCats.push(v);CATS=BASE_CATS.concat(customCats);
+  addCatOpen=false;openCats[v]=true;addIn=v;save();showPicker();
+  var f=$("fen");if(f)f.focus();
+}
+function removeCategory(cat){
+  var ids=catCards(cat).map(function(c){return c.id});
+  custom=custom.filter(function(c){return ids.indexOf(c.id)<0});rebuild();
+  ids.forEach(function(id){delete selMap[id];delete W[id]});
+  customCats=customCats.filter(function(n){return n!==cat});CATS=BASE_CATS.concat(customCats);delete openCats[cat];
+  refreshCards();sess=null;addIn=null;save();showPicker();
 }
 function addCard(cat){
   var en=$("fen").value.trim(),jp=$("fjp").value.trim(),ro=$("fro").value.trim(),err=$("ferr");
@@ -554,6 +596,7 @@ function renderStudy(){
   if(!sessOK(sess)){sess=null;showPicker();return}
   var N=sess.order.length,done=sess.i>=N,lab=catLab(CATS.filter(function(c){return sess.order.some(function(id){return catOf(byId[id])===c})}));
   $("sinfo").hidden=false;$("send").hidden=done;$("shint").hidden=done;
+  $("sbar").hidden=false;$("sfill").style.width=(done?100:(sess.i+1)/N*100)+"%";
   $("sprog").textContent=done?"Session complete":lab+", card "+(sess.i+1)+" of "+N;
   $("count").innerHTML=done?"<span>Done</span>":"<span class='num'>"+(sess.i+1)+"</span><span>of "+N+"</span>";
   if(done){
