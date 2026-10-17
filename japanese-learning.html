@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Japanese Phrasebook</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#e9edf0;--paper:#fff;--ink:#10212e;--mute:#5d6d79;--line:#d0d8dd;--tint:#e3e9ed;--accent:#0a7a5a;--onacc:#fff;--sign:#0d2f45;--signink:#f4f7f8;--hi:#ffd23f;--neg:#c2412f;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1318;--paper:#16212a;--ink:#e7edf1;--mute:#8a99a4;--line:#26333d;--tint:#1d2a34;--accent:#3fcf9f;--onacc:#06251b;--sign:#0f4a6e;--neg:#ff7a6b}}
+:root[data-theme="dark"]{--bg:#0c1318;--paper:#16212a;--ink:#e7edf1;--mute:#8a99a4;--line:#26333d;--tint:#1d2a34;--accent:#3fcf9f;--onacc:#06251b;--sign:#0f4a6e;--neg:#ff7a6b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:22px 16px 100px}
+.wrap{width:100%;max-width:520px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{font-size:1.35rem;margin:0;font-weight:700;letter-spacing:-.01em}
+#count{display:flex;align-items:center;gap:8px;color:var(--mute);font-size:.9rem}
+.num{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 6px;border-radius:50%;border:2.5px solid var(--accent);color:var(--ink);font-weight:700;font-size:.95rem}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.seg{flex:1;display:flex;background:var(--tint);border-radius:12px;padding:4px}
+.seg button{flex:1;border:0;background:transparent;border-radius:9px;padding:10px 4px;font-size:.88rem;font-weight:500;color:var(--mute)}
+.seg button.on{background:var(--paper);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+button{font:inherit;font-size:.95rem;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,.scene:focus-visible,.grip:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sq{width:50px;height:50px;padding:0;display:flex;align-items:center;justify-content:center;flex:none}
+.solid{background:var(--accent);border-color:var(--accent);color:var(--onacc)}
+.deckbtn{width:100%;display:flex;justify-content:space-between;align-items:center;margin:0 0 16px;padding:12px 16px;font-weight:500;text-align:left}
+.deckbtn span:last-child{color:var(--mute);font-size:1.2rem}
+.bar{height:4px;background:var(--line);border-radius:2px;margin-bottom:16px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:2px;width:0;transition:width .25s}
+.scene{height:370px;perspective:1200px;cursor:pointer}
+.card{position:relative;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
+.card.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;display:flex;flex-direction:column;justify-content:center;padding:56px 28px 44px;gap:8px;overflow:auto}
+.face .lab{position:absolute;top:20px;left:28px;font-size:.85rem;color:var(--mute)}
+.face .tap{position:absolute;bottom:18px;right:24px;font-size:.8rem;color:var(--mute)}
+.front{background:var(--paper);border:1px solid var(--line)}
+.back{background:var(--sign);color:var(--signink);transform:rotateY(180deg)}
+.back .lab,.back .tap{color:var(--signink);opacity:.65}
+.q{font-size:2rem;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.pron{font-size:1.9rem;line-height:1.25;font-weight:500}
+.roma{font-size:1.1rem;opacity:.8}
+b{font-weight:700;text-decoration:underline;text-decoration-thickness:2.5px;text-underline-offset:4px;text-decoration-color:var(--accent)}
+.back b{text-decoration-color:var(--hi)}
+.row{display:flex;gap:10px;margin-top:16px;align-items:stretch}
+.row .main{flex:1;height:50px;font-weight:500}
+.chips{display:flex;gap:8px;margin-top:12px;justify-content:center}
+.chips button{padding:8px 14px;border-radius:20px;font-size:.88rem;color:var(--mute)}
+.chips button.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.list{display:flex;flex-direction:column;gap:10px}
+.item{display:flex;align-items:stretch;background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.item.drag{position:fixed;z-index:50;margin:0;border-color:var(--accent);box-shadow:0 12px 28px rgba(0,0,0,.35)}
+.ph{background:#000;border:1px solid var(--line);border-radius:16px;flex:none}
+.grip{width:44px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--tint);border-right:1px solid var(--line);color:var(--mute);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.item.drag .grip{cursor:grabbing;color:var(--accent)}
+.body{flex:1;min-width:0;padding:14px;display:flex;flex-direction:column;gap:2px}
+.jp{font-size:1.25rem;font-weight:700;line-height:1.3}
+.pr{font-size:1.02rem;opacity:.85}
+.en{font-size:.98rem;color:var(--mute);margin-top:2px}
+.tpl{font-size:.8rem;color:var(--accent);font-weight:500}
+.act{display:flex;align-items:center;padding:0 12px 0 4px}
+.list.cover .item:not(.show) .en,.stack.cover .item:not(.show) .en{filter:blur(6px);cursor:pointer}
+.scr{margin-top:10px;display:flex;flex-direction:column;gap:3px}
+.scr:empty{display:none}
+.sl{display:flex;gap:10px;align-items:baseline;font-size:1.05rem;line-height:1.35}
+.sl span{flex:none;width:4.8em;font-size:.75rem;color:var(--mute)}
+.sl:first-child{font-size:1.4rem;font-weight:500}
+.back .sl span{color:var(--signink);opacity:.6}
+.item .scr{border-top:1px solid var(--line);padding-top:8px;margin-top:8px}
+.sinfo{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--mute);font-size:.9rem}
+.stack{position:relative}
+.stack .item{position:relative;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;transition:transform .25s,opacity .25s}
+.stack .item.under{position:absolute;inset:0;transform:translateY(10px) scale(.96);opacity:.5;pointer-events:none;cursor:auto}
+.sbadge{position:absolute;inset:0;opacity:0;z-index:3;pointer-events:none}
+.sbadge.pos{background:var(--accent)}
+.sbadge.n{background:var(--neg)}
+.shint{color:var(--mute);font-size:.85rem;text-align:center;margin:14px 0 0}
+.done{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:28px 20px;text-align:center}
+.done h3{margin:0 0 8px;font-size:1.2rem}
+.done p{margin:0 0 18px;color:var(--mute)}
+dialog{border:1px solid var(--line);border-radius:20px;background:var(--paper);color:var(--ink);padding:22px;width:min(92vw,420px);font-family:inherit}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+dialog h2{margin:0 0 16px;font-size:1.15rem}
+.f{display:flex;flex-direction:column;gap:6px;color:var(--mute);font-size:.88rem}
+select{font:inherit;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;font-size:1rem}
+.sw small{display:block;color:var(--mute);font-size:.82rem}
+.sw input{appearance:none;-webkit-appearance:none;flex:none;width:48px;height:28px;border-radius:14px;background:var(--line);position:relative;cursor:pointer;transition:background .2s;margin:0}
+.sw input::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
+.sw input:checked{background:var(--accent)}
+.sw input:checked::after{transform:translateX(20px)}
+.endbtn{padding:8px 14px;font-size:.85rem;border-radius:10px;color:var(--mute)}
+.pick{display:flex;flex-direction:column;gap:8px}
+.pick h3{margin:4px 0 0;font-size:1.2rem}
+.phint{margin:0 0 6px;color:var(--mute);font-size:.9rem}
+.pbtn{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;min-height:58px;padding:12px 16px;text-align:left;font-weight:500}
+.pbtn small{color:var(--mute);font-size:.85rem;font-weight:400}
+.fbx{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pcat{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.pcat.on{border-color:var(--accent)}
+.prow{display:flex;align-items:center;gap:12px;min-height:58px;padding:4px 4px 4px 16px;cursor:pointer}
+.pchev{width:44px;height:44px;padding:0;border:0;background:transparent;color:var(--mute);display:flex;align-items:center;justify-content:center;flex:none}
+.pchev svg{transition:transform .2s}
+.pchev.open svg{transform:rotate(180deg)}
+.plist{border-top:1px solid var(--line);padding:2px 16px 6px}
+.pi{display:flex;flex-direction:column;padding:10px 0;border-bottom:1px solid var(--line)}
+.pi:last-child{border-bottom:0}
+.prow input{width:22px;height:22px;flex:none;accent-color:var(--accent);margin:0}
+.prow span{flex:1;font-weight:500}
+.prow small{color:var(--mute);font-size:.85rem}
+.ptools{display:flex;gap:8px}
+.ptools button{padding:8px 12px;font-size:.85rem;border-radius:10px}
+.pgo{margin-top:8px;height:52px;font-weight:500}
+.dact{display:flex;justify-content:flex-end;margin-top:22px}
+.warn{background:var(--tint);border-radius:12px;padding:12px 14px;font-size:.88rem;color:var(--ink);margin:0}
+dialog.sheet{padding:0;width:min(94vw,520px);height:min(86vh,680px)}
+dialog.sheet[open]{display:flex;flex-direction:column}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:12px 8px 4px 20px;flex:none}
+.dh h2{margin:0;font-size:1.1rem}
+.x{width:44px;height:44px;padding:0;border:0;background:transparent;font-size:1.7rem;line-height:1;color:var(--mute)}
+.dtabs{display:flex;gap:6px;overflow-x:auto;padding:4px 16px 12px;border-bottom:1px solid var(--line);flex:none;scrollbar-width:none}
+.dt{flex:none;padding:8px 14px;border-radius:999px;font-size:.9rem;white-space:nowrap}
+.dt small{opacity:.7;margin-left:4px}
+.dt.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.dpanel{flex:1;overflow-y:auto;padding:8px 16px 16px;min-height:0}
+.dbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0 6px}
+.dbar button{padding:8px 12px;font-size:.85rem;border-radius:10px}
+.dbar .grow{flex:1}
+.crow{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line);min-height:56px;cursor:pointer}
+.crow input{width:22px;height:22px;flex:none;accent-color:var(--accent);margin:0}
+.ct{flex:1;min-width:0;display:flex;flex-direction:column}
+.ce{font-weight:500}
+.cj{color:var(--mute);font-size:.88rem}
+.del{flex:none;min-width:44px;height:44px;padding:0 10px;border-radius:10px;color:var(--mute);font-size:.85rem}
+.del.arm{color:var(--neg);border-color:var(--neg)}
+.dfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--line);flex:none}
+.dfoot span{color:var(--mute);font-size:.9rem}
+.addf{display:flex;flex-direction:column;gap:12px;background:var(--tint);border-radius:14px;padding:14px;margin:10px 0}
+.addf label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--mute)}
+.addf input{font:inherit;font-size:1rem;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+.err{color:var(--neg);font-size:.85rem;margin:0}
+.ok{color:var(--accent);font-size:.85rem;margin:6px 0 0}
+.muted{color:var(--mute);font-size:.9rem;padding:16px 4px}
+.fb{display:flex;gap:8px;justify-content:flex-end}
+.fspeed{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;align-items:center;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 5px 5px 16px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.fspeed span{font-size:.8rem;color:var(--mute);margin-right:4px}
+.fspeed button{padding:9px 12px;min-width:56px;border-radius:999px;border:0;background:transparent;color:var(--ink);font-size:.88rem}
+.fspeed button.on{background:var(--accent);color:var(--onacc)}
+button.fspeed.na{padding:12px 18px;color:var(--mute);font-size:.88rem;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.card,.bar i,.sw input,.sw input::after,.stack .item{transition:none}}
+@media (max-width:420px){.q{font-size:1.65rem}.pron{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Japanese phrasebook</h1><div id="count"></div></header>
+<div class="tabs">
+  <div class="seg" role="tablist"><button id="tabrev" role="tab">Revision</button><button id="tabfc" role="tab">Flashcards</button><button id="tabstudy" role="tab">Study</button></div>
+  <button id="menu" class="sq" aria-label="Settings"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+</div>
+<button id="deckbtn" class="deckbtn"><span id="decktxt"></span><span aria-hidden="true">›</span></button>
+<div id="empty" class="done" hidden><h3>No cards selected</h3><p>Choose at least one card to start studying.</p><button id="emptybtn" class="solid">Choose cards</button></div>
+<div id="fcview">
+  <div class="bar"><i id="prog"></i></div>
+  <div class="scene" id="scene" tabindex="0" role="button" aria-label="Flip card">
+    <div class="card" id="card">
+      <div class="face front"><span class="lab" id="flab"></span><div class="tpl" id="star"></div><div class="q" id="q"></div><span class="tap">Tap to flip</span></div>
+      <div class="face back"><span class="lab">Say it</span><div class="pron" id="pron"></div><div class="roma" id="roma"></div><div class="scr" id="scr"></div><span class="tap">Tap to flip</span></div>
+    </div>
+  </div>
+  <div class="row">
+    <button id="prev" class="main">Previous</button>
+    <button id="spk" class="sq solid" aria-label="Speak" data-spk="1"></button>
+    <button id="next" class="main">Next</button>
+  </div>
+  <div class="chips"><button id="shuf">Shuffle</button><button id="rev">Japanese first</button></div>
+</div>
+<div id="studyview" hidden>
+  <div class="sinfo" id="sinfo"><span id="sprog"></span><button id="send" class="endbtn">End session</button></div>
+  <div class="stack" id="stack"></div>
+  <p class="shint" id="shint">Swipe the card away to the left or right.</p>
+</div>
+<div class="list" id="list" hidden></div>
+</div>
+
+<div class="fspeed" id="fspeed" role="group" aria-label="Audio speed"><span>Speed</span><button data-s="1">1×</button><button data-s="0.75">0.75×</button><button data-s="0.5">0.5×</button></div>
+<button class="fspeed na" id="noaudio" hidden>Audio off: no Japanese voice found</button>
+
+<dialog id="dlg">
+  <h2>Settings</h2>
+  <label class="f" id="vwrap">Japanese voice<select id="voice"></select></label>
+  <p class="warn" id="vnote" hidden>No Japanese voice was found on this device, so audio is turned off. Install a Japanese text-to-speech voice in your device’s language or speech settings, then reload this page.</p>
+  <label class="sw"><span>Show Japanese script<small>Kanji, hiragana and katakana on cards.</small></span><input type="checkbox" id="scrtg"></label>
+  <label class="sw"><span>Cover English<small>Revision and Study. Tap a card to reveal.</small></span><input type="checkbox" id="cover"></label>
+  <div class="sw"><span>Study history<small>Forget all swipes.</small></span><button id="wreset">Reset</button></div>
+  <div class="dact"><button id="done" class="solid">Done</button></div>
+</dialog>
+
+<dialog id="deckdlg" class="sheet" aria-labelledby="dtitle">
+  <div class="dh"><h2 id="dtitle">Choose cards to study</h2><button class="x" id="deckx" aria-label="Close">×</button></div>
+  <div class="dtabs" id="dtabs" role="tablist"></div>
+  <div class="dpanel" id="dpanel" role="tabpanel"></div>
+  <div class="dfoot"><span id="dcount"></span><button id="deckdone" class="solid">Done</button></div>
+</dialog>
+<script>
+var CATS=["Greetings","Shopping","Directions","Help","Templates","My cards"];
+var RAW=[
+["Greetings","How are you?","GEN-kee dess kah?","Genki desu ka?","元気ですか？","げんきですか？"],
+["Greetings","How was your weekend?","SHOO-maht-soo doh desh-tah?","Shuumatsu dou deshita?","週末はどうでしたか？","しゅうまつはどうでしたか？"],
+["Greetings","I’m good.","GEN-kee dess.","Genki desu.","元気です。","げんきです。"],
+["Greetings","It was fun.","tah-no-SHEE-kaht-tah dess.","Tanoshikatta desu.","楽しかったです。","たのしかったです。"],
+["Greetings","Excuse me.","soo-mee-mah-SEN","Sumimasen.","すみません。","すみません。"],
+["Greetings","Thank you.","ah-ree-gah-TOH goh-zah-ee-mahss","Arigatou gozaimasu.","ありがとうございます。","ありがとうございます。"],
+["Shopping","How much is this?","KOH-reh wah ee-KOO-rah dess kah?","Kore wa ikura desu ka?","これはいくらですか？","これはいくらですか？"],
+["Shopping","How much is that?","SOH-reh wah ee-KOO-rah dess kah?","Sore wa ikura desu ka?","それはいくらですか？","それはいくらですか？"],
+["Shopping","Can I have this, please?","KOH-reh oh koo-dah-SIGH","Kore o kudasai.","これをください。","これをください。"],
+["Shopping","Can I have that, please?","SOH-reh oh koo-dah-SIGH","Sore o kudasai.","それをください。","それをください。"],
+["Greetings","Please.","oh-neh-gah-ee-shee-MAHSS","Onegaishimasu.","お願いします。","おねがいします。"],
+["Directions","Where is the train station?","EH-kee wah DOH-koh dess kah?","Eki wa doko desu ka?","駅はどこですか？","えきはどこですか？"],
+["Directions","Where is the toilet?","TOH-ee-reh wah DOH-koh dess kah?","Toire wa doko desu ka?","トイレはどこですか？","といれはどこですか？"],
+["Directions","Where is the temple?","oh-TEH-rah wah DOH-koh dess kah?","Otera wa doko desu ka?","お寺はどこですか？","おてらはどこですか？"],
+["Directions","Where is the shrine?","JEEN-jah wah DOH-koh dess kah?","Jinja wa doko desu ka?","神社はどこですか？","じんじゃはどこですか？"],
+["Directions","Where is the hotel?","HOH-teh-roo wah DOH-koh dess kah?","Hoteru wa doko desu ka?","ホテルはどこですか？","ほてるはどこですか？"],
+["Directions","Where is the restaurant?","reh-soo-toh-RAHN wah DOH-koh dess kah?","Resutoran wa doko desu ka?","レストランはどこですか？","れすとらんはどこですか？"],
+["Directions","Where is the convenience store?","kohn-BEE-nee wah DOH-koh dess kah?","Konbini wa doko desu ka?","コンビニはどこですか？","こんびにはどこですか？"],
+["Directions","Where is the bus stop?","bah-soo-TEH-ee wah DOH-koh dess kah?","Basutei wa doko desu ka?","バス停はどこですか？","ばすていはどこですか？"],
+["Directions","Where is the airport?","KOO-koh wah DOH-koh dess kah?","Kuukou wa doko desu ka?","空港はどこですか？","くうこうはどこですか？"],
+["Directions","Where is the entrance?","ee-ree-GOO-chee wah DOH-koh dess kah?","Iriguchi wa doko desu ka?","入口はどこですか？","いりぐちはどこですか？"],
+["Directions","Where is the exit?","deh-GOO-chee wah DOH-koh dess kah?","Deguchi wa doko desu ka?","出口はどこですか？","でぐちはどこですか？"],
+["Help","Could you help me?","teh-tsoo-DAHT-teh moh-rah-eh-MAHSS kah?","Tetsudatte moraemasu ka?","手伝ってもらえますか？","てつだってもらえますか？"],
+["Help","Can you speak English?","EH-goh wah hah-nah-seh-MAHSS kah?","Eigo wa hanasemasu ka?","英語は話せますか？","えいごははなせますか？"],
+["Help","I don’t understand.","wah-kah-ree-mah-SEN","Wakarimasen.","わかりません。","わかりません。"],
+["Help","Please say that again.","MOH ee-chee-doh oh-neh-gah-ee-shee-MAHSS","Mou ichido onegaishimasu.","もう一度お願いします。","もういちどおねがいします。"],
+["Help","Please speak slowly.","YOOK-koo-ree hah-nah-shee-teh koo-dah-SIGH","Yukkuri hanashite kudasai.","ゆっくり話してください。","ゆっくりはなしてください。"],
+["Templates","Where is ___?","___ wah DOH-koh dess kah?","___ wa doko desu ka?","＿＿はどこですか？","＿＿はどこですか？"],
+["Templates","How much is ___?","___ wah ee-KOO-rah dess kah?","___ wa ikura desu ka?","＿＿はいくらですか？","＿＿はいくらですか？"],
+["Templates","___, please.","___ oh koo-dah-SIGH","___ o kudasai.","＿＿をください。","＿＿をください。"],
+["Templates","Excuse me, could I ask something?","soo-mee-mah-SEN, CHOHT-toh EE dess kah?","Sumimasen, chotto ii desu ka?","すみません、ちょっといいですか？","すみません、ちょっといいですか？"]
+];
+var $=function(id){return document.getElementById(id)};
+var KEY="jp.phrasebook.v2";
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var S={};try{S=JSON.parse(store.get(KEY)||"{}")||{}}catch(e){S={}}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function clampW(v){return Math.max(-100,Math.min(100,v))}
+function kata(h){return h.replace(/[\u3041-\u3096]/g,function(c){return String.fromCharCode(c.charCodeAt(0)+96)})}
+function toHira(k){return k.replace(/[\u30A1-\u30F6]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-96)})}
+function isKana(t){return /^[\u3040-\u30ffー、。！？＿\s]+$/.test(t)}
+function fmt(p){return esc(p).replace(/[A-Z]{2,}/g,function(m){return "<b>"+m.toLowerCase()+"</b>"})}
+function isTpl(c){return c.jp.indexOf("＿＿")===0}
+
+/* cards */
+var BASE=RAW.map(function(r,i){return {id:"b"+i,cat:r[0],en:r[1],pr:r[2],ro:r[3],jp:r[4],hi:r[5]}});
+var custom=(Array.isArray(S.custom)?S.custom:[]).filter(function(c){return c&&typeof c.id==="string"&&typeof c.en==="string"&&typeof c.jp==="string"});
+var ALL=[],byId={};
+function rebuild(){ALL=BASE.concat(custom);byId={};ALL.forEach(function(c){byId[c.id]=c})}
+rebuild();
+function recon(a){var seen={},out=[];(a||[]).forEach(function(id){if(byId[id]&&!seen[id]){seen[id]=1;out.push(id)}});ALL.forEach(function(c){if(!seen[c.id])out.push(c.id)});return out}
+var selMap={};
+if(Array.isArray(S.sel))S.sel.forEach(function(id){if(byId[id])selMap[id]=true});else ALL.forEach(function(c){selMap[c.id]=true});
+function deck(o){return o.filter(function(id){return selMap[id]})}
+var forder=recon(S.order),rorder=recon(S.rorder);
+var pos=Math.max(+S.pos||0,0),jpFirst=!!S.jp,flipped=!!S.flipped,mode=(S.mode==="fc"||S.mode==="study")?S.mode:"rev";
+var scripts=S.scripts!==false,cover=!!S.cover,voiceId=S.voice||null,scrollY0=+S.scroll||0;
+var speed=[1,0.75,0.5].indexOf(+S.speed)>=0?+S.speed:1;
+var W={};if(S.w&&typeof S.w==="object")Object.keys(S.w).forEach(function(k){if(byId[k])W[k]=clampW(Math.round(+S.w[k]||0))});
+var pickSel=Array.isArray(S.pick)?S.pick:null;
+var sess=null,sbusy=false,dirty=false,deckTab="Greetings",addOpen=false,deckMsg="";
+function catOf(c){return CATS.indexOf(c.cat)>=0?c.cat:"My cards"}
+function catIds(cats){return deck(rorder).filter(function(id){return cats.indexOf(catOf(byId[id]))>=0})}
+function catLab(c){return c.length===1?c[0]:c.length===2?c.join(" and "):c.length+" categories"}
+function sessOK(x){if(!x||!Array.isArray(x.cats)||!x.cats.length||!Array.isArray(x.order))return false;var d=catIds(x.cats);return x.order.length===d.length&&x.i>=0&&x.i<=x.order.length&&x.order.every(function(id){return d.indexOf(id)>=0})}
+if(Array.isArray(S.sorder)&&Number.isInteger(S.si)){sess={cats:S.scats,order:S.sorder,i:S.si};if(!sessOK(sess))sess=null}
+function save(){store.set(KEY,JSON.stringify({mode:mode,order:forder,pos:pos,jp:jpFirst,flipped:flipped,rorder:rorder,cover:cover,voice:voiceId,speed:speed,scripts:scripts,w:W,scats:sess?sess.cats:null,pick:pickSel,sorder:sess?sess.order:null,si:sess?sess.i:0,custom:custom,sel:Object.keys(selMap),scroll:mode==="rev"?Math.round(window.scrollY):scrollY0}))}
+
+var SPK="<svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M11 5L6 9H2v6h4l5 4V5z'/><path d='M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13'/></svg>";
+var DOTS="<svg width='18' height='30' viewBox='0 0 18 30' fill='currentColor' aria-hidden='true'><circle cx='9' cy='6' r='2.5'/><circle cx='9' cy='15' r='2.5'/><circle cx='9' cy='24' r='2.5'/></svg>";
+function scHTML(c){
+  if(!scripts)return "";
+  var h="<div class='sl'><span>Japanese</span>"+esc(c.jp)+"</div>";
+  if(c.hi)h+="<div class='sl'><span>Hiragana</span>"+esc(c.hi)+"</div><div class='sl'><span>Katakana</span>"+esc(kata(c.hi))+"</div>";
+  return h;
+}
+
+/* audio: device Japanese voices only */
+var VOICES=[],vsel=$("voice");
+function isJa(x){return x.lang&&x.lang.toLowerCase().replace("_","-").indexOf("ja")===0}
+function audioState(){
+  var ok=VOICES.length>0;
+  $("fspeed").hidden=!ok;$("noaudio").hidden=ok;$("vwrap").hidden=!ok;$("vnote").hidden=ok;
+  [].slice.call(document.querySelectorAll("[data-spk]")).forEach(function(b){b.disabled=!ok;b.title=ok?"":"No Japanese voice found on this device"});
+}
+function loadVoices(){
+  var ss=window.speechSynthesis;
+  VOICES=ss?ss.getVoices().filter(isJa):[];
+  vsel.innerHTML="";
+  VOICES.forEach(function(x){var o=document.createElement("option");o.value=x.voiceURI;o.textContent=x.name+" ("+x.lang+")";vsel.appendChild(o)});
+  var pick=VOICES.filter(function(x){return x.voiceURI===voiceId})[0]||VOICES[0];
+  if(pick)vsel.value=pick.voiceURI;
+  audioState();
+}
+function speak(c){
+  var ss=window.speechSynthesis;
+  if(!ss||!VOICES.length)return;
+  var t=c.jp.replace(/^＿＿[はを]?/,"");if(!t)return;
+  var u=new SpeechSynthesisUtterance(t),v=VOICES.filter(function(x){return x.voiceURI===vsel.value})[0]||VOICES[0];
+  u.voice=v;u.lang=v.lang;u.rate=0.9*speed;
+  ss.cancel();ss.speak(u);
+}
+function current(){
+  var d=deck(rorder);
+  if(mode==="study"&&sess&&sess.i<sess.order.length)return byId[sess.order[sess.i]];
+  if(mode==="fc"){var a=deck(forder);return a.length?byId[a[Math.min(pos,a.length-1)]]:null}
+  return null;
+}
+function speakCurrent(){var c=current();if(c)speak(c)}
+vsel.onchange=function(){voiceId=vsel.value;save();speakCurrent()};
+function syncSpeed(){[].slice.call($("fspeed").querySelectorAll("button")).forEach(function(b){b.classList.toggle("on",+b.dataset.s===speed)})}
+[].slice.call($("fspeed").querySelectorAll("button")).forEach(function(b){b.onclick=function(){speed=+b.dataset.s;syncSpeed();save();speakCurrent()}});
+$("noaudio").onclick=function(){$("dlg").showModal()};
+function spkBtn(c,cls){
+  var b=document.createElement("button");b.className=cls;b.innerHTML=SPK;b.setAttribute("aria-label","Speak");b.setAttribute("data-spk","1");
+  b.disabled=!VOICES.length;if(b.disabled)b.title="No Japanese voice found on this device";
+  b.onclick=function(e){e.stopPropagation();speak(c)};
+  return b;
+}
+
+/* flashcards */
+$("spk").innerHTML=SPK;
+$("spk").onclick=function(e){e.stopPropagation();speakCurrent()};
+function render(){
+  var a=deck(forder);if(!a.length)return;
+  pos=Math.min(pos,a.length-1);
+  var c=byId[a[pos]];
+  $("card").classList.toggle("flipped",flipped);
+  $("star").textContent=isTpl(c)?"Fill-in template":"";
+  $("flab").textContent=jpFirst?"Japanese":"English";
+  $("q").textContent=jpFirst?(c.ro||c.jp):c.en;
+  $("pron").innerHTML=c.pr?fmt(c.pr):"";
+  $("roma").textContent=jpFirst?c.en:(c.ro||"");
+  $("scr").innerHTML=scHTML(c);
+  $("prog").style.width=((pos+1)/a.length*100)+"%";
+  if(mode==="fc")$("count").innerHTML="<span class='num'>"+(pos+1)+"</span><span>of "+a.length+"</span>";
+}
+$("scene").onclick=function(){flipped=!flipped;$("card").classList.toggle("flipped",flipped);save()};
+function go(n){var L=deck(forder).length;if(!L)return;pos=(pos+n+L)%L;flipped=false;render();save()}
+document.addEventListener("keydown",function(e){
+  if($("dlg").open||$("deckdlg").open)return;
+  if(mode==="study"){if(e.key==="ArrowLeft")commit(-1);else if(e.key==="ArrowRight")commit(1);return}
+  if(mode!=="fc")return;
+  if(e.key===" "||e.key==="Enter"){if(document.activeElement.tagName!=="BUTTON"){e.preventDefault();$("scene").click()}}
+  else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1);
+});
+$("next").onclick=function(){go(1)};
+$("prev").onclick=function(){go(-1)};
+$("shuf").onclick=function(){
+  for(var i=forder.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=forder[i];forder[i]=forder[j];forder[j]=t}
+  pos=0;flipped=false;render();save();
+};
+function syncRev(){$("rev").classList.toggle("on",jpFirst);$("rev").textContent=jpFirst?"English first":"Japanese first"}
+$("rev").onclick=function(){jpFirst=!jpFirst;flipped=false;render();syncRev();save()};
+
+/* shared card item */
+function mkItem(c){
+  var it=document.createElement("div");it.className="item";it.dataset.id=c.id;
+  var body=document.createElement("div");body.className="body";
+  body.innerHTML=(isTpl(c)?"<div class='tpl'>Fill-in template</div>":"")+"<div class='jp'></div><div class='pr'></div><div class='en'></div><div class='scr'></div>";
+  body.querySelector(".jp").textContent=c.ro||c.jp;
+  var pr=body.querySelector(".pr");if(c.pr)pr.innerHTML=fmt(c.pr);else pr.hidden=true;
+  body.querySelector(".en").textContent=c.en;
+  body.querySelector(".scr").innerHTML=scHTML(c);
+  var act=document.createElement("div");act.className="act";act.appendChild(spkBtn(c,"sq solid"));
+  it.appendChild(body);it.appendChild(act);
+  return it;
+}
+
+/* revision list with drag-and-drop */
+var list=$("list");
+function buildList(){
+  list.innerHTML="";
+  deck(rorder).forEach(function(id){
+    var c=byId[id],it=mkItem(c);
+    var g=document.createElement("div");g.className="grip";g.innerHTML=DOTS;g.setAttribute("aria-label","Drag to reorder");g.setAttribute("role","img");
+    var ph=null,off=0;
+    g.onpointerdown=function(e){
+      e.preventDefault();g.setPointerCapture(e.pointerId);
+      var r=it.getBoundingClientRect();off=e.clientY-r.top;
+      ph=document.createElement("div");ph.className="ph";ph.style.height=r.height+"px";
+      it.after(ph);
+      it.style.width=r.width+"px";it.style.left=r.left+"px";it.style.top=r.top+"px";
+      it.classList.add("drag");
+    };
+    g.onpointermove=function(e){
+      if(!ph)return;
+      it.style.top=(e.clientY-off)+"px";
+      var kids=[].slice.call(list.children);
+      for(var k=0;k<kids.length;k++){
+        var n=kids[k];if(n===it||n===ph)continue;
+        var r=n.getBoundingClientRect();
+        if(e.clientY>r.top&&e.clientY<r.bottom){
+          if(ph.compareDocumentPosition(n)&Node.DOCUMENT_POSITION_FOLLOWING)n.after(ph);else n.before(ph);
+          break;
+        }
+      }
+      if(e.clientY<90)window.scrollBy(0,-14);else if(e.clientY>window.innerHeight-90)window.scrollBy(0,14);
+    };
+    var end=function(){
+      if(!ph)return;
+      ph.replaceWith(it);ph=null;
+      it.classList.remove("drag");it.style.width="";it.style.left="";it.style.top="";
+      var vis=[].slice.call(list.querySelectorAll(".item")).map(function(n){return n.dataset.id}),slots=[];
+      rorder.forEach(function(x,i){if(selMap[x])slots.push(i)});
+      vis.forEach(function(x,k){rorder[slots[k]]=x});
+      save();
+    };
+    g.onpointerup=end;g.onpointercancel=end;
+    it.onclick=function(){if(cover)it.classList.toggle("show")};
+    it.insertBefore(g,it.firstChild);
+    list.appendChild(it);
+  });
+}
+
+/* study mode */
+function startSession(cats){
+  var pos0={};rorder.forEach(function(id,i){pos0[id]=i});
+  sess={cats:cats,order:catIds(cats).sort(function(a,b){return ((W[b]||0)-(W[a]||0))||(pos0[a]-pos0[b])}),i:0};save();
+}
+function commit(d){
+  if(sbusy||!sess||sess.i>=sess.order.length||mode!=="study")return;
+  sbusy=true;
+  var top=$("stack").lastElementChild,id=sess.order[sess.i];
+  top.style.transition="transform .25s,opacity .25s";
+  top.style.transform="translateX("+(d*520)+"px) rotate("+(d*18)+"deg)";top.style.opacity="0";
+  setTimeout(function(){W[id]=clampW((W[id]||0)+d);sess.i++;sbusy=false;save();renderStudy()},230);
+}
+function showPicker(){
+  $("sinfo").hidden=true;$("shint").hidden=true;
+  $("count").innerHTML="<span>"+deck(rorder).length+" cards</span>";
+  var avail=CATS.filter(function(c){return catIds([c]).length});
+  var chosen=(pickSel||avail).filter(function(c){return avail.indexOf(c)>=0});
+  var box=document.createElement("div");box.className="pick";
+  box.innerHTML="<h3>What do you want to study?</h3><p class='phint'>Choose one or more categories. Only enabled cards are included.</p><div class='ptools'><button id='pall'>Select all</button><button id='pnone'>Clear</button></div>";
+  var rows=[],go=document.createElement("button");go.className="solid pgo";
+  function upd(){
+    var n=catIds(chosen).length;
+    go.textContent=n?"Start session ("+n+(n===1?" card)":" cards)"):"Choose a category";go.disabled=!n;
+    rows.forEach(function(r){r.row.classList.toggle("on",r.cb.checked)});
+    pickSel=chosen.slice();save();
+  }
+  avail.forEach(function(cat){
+    var ids=catIds([cat]),n=ids.length;
+    var wrap=document.createElement("div");wrap.className="pcat";
+    var row=document.createElement("label");row.className="prow";
+    var cb=document.createElement("input");cb.type="checkbox";cb.checked=chosen.indexOf(cat)>=0;
+    row.innerHTML="<span></span><small>"+n+(n===1?" card":" cards")+"</small>";
+    row.firstChild.textContent=cat;row.insertBefore(cb,row.firstChild);
+    var chev=document.createElement("button");chev.className="pchev";chev.setAttribute("aria-expanded","false");chev.setAttribute("aria-label","Show phrases in "+cat);
+    chev.innerHTML="<svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M6 9l6 6 6-6'/></svg>";
+    var pl=document.createElement("div");pl.className="plist";pl.hidden=true;
+    ids.forEach(function(id){var c=byId[id],it=document.createElement("div");it.className="pi";it.innerHTML="<span class='ce'></span><span class='cj'></span>";it.querySelector(".ce").textContent=c.en;it.querySelector(".cj").textContent=c.jp;pl.appendChild(it)});
+    chev.onclick=function(e){e.preventDefault();e.stopPropagation();var open=pl.hidden;pl.hidden=!open;chev.setAttribute("aria-expanded",String(open));chev.classList.toggle("open",open);chev.setAttribute("aria-label",(open?"Hide":"Show")+" phrases in "+cat)};
+    row.appendChild(chev);
+    cb.onchange=function(){chosen=CATS.filter(function(c){return c===cat?cb.checked:chosen.indexOf(c)>=0});upd()};
+    wrap.appendChild(row);wrap.appendChild(pl);
+    rows.push({row:wrap,cb:cb});box.appendChild(wrap);
+  });
+  go.onclick=function(){if(!chosen.length)return;startSession(chosen.slice());renderStudy()};
+  box.appendChild(go);
+  var setAll=function(on){chosen=on?avail.slice():[];rows.forEach(function(r){r.cb.checked=on});upd()};
+  box.querySelector("#pall").onclick=function(){setAll(true)};
+  box.querySelector("#pnone").onclick=function(){setAll(false)};
+  $("stack").appendChild(box);upd();
+}
+function renderStudy(){
+  var st=$("stack");st.innerHTML="";
+  if(!sessOK(sess)){sess=null;showPicker();return}
+  var N=sess.order.length,done=sess.i>=N,lab=catLab(sess.cats);
+  $("sinfo").hidden=false;$("send").hidden=done;$("shint").hidden=done;
+  $("sprog").textContent=done?"Session complete":lab+", card "+(sess.i+1)+" of "+N;
+  $("count").innerHTML=done?"<span>Done</span>":"<span class='num'>"+(sess.i+1)+"</span><span>of "+N+"</span>";
+  if(done){
+    st.innerHTML="<div class='done'><h3>Session complete</h3><p>You went through all "+N+" cards. Your swipes will shape the order of the next session.</p><div class='fbx'><button id='again' class='solid'>Study again</button><button id='chg'>Change categories</button></div></div>";
+    $("again").onclick=function(){startSession(sess.cats);renderStudy()};
+    $("chg").onclick=function(){sess=null;save();renderStudy()};
+    return;
+  }
+  if(sess.i+1<N){var u=mkItem(byId[sess.order[sess.i+1]]);u.classList.add("under");st.appendChild(u)}
+  var top=mkItem(byId[sess.order[sess.i]]),b=document.createElement("div");b.className="sbadge";top.appendChild(b);
+  var sx=0,dx=0,drag=false;
+  function badge(v){b.className="sbadge "+(v>0?"pos":"n");b.style.opacity=Math.min(Math.abs(v)/90,1)*0.3}
+  top.onpointerdown=function(e){if(sbusy||e.target.closest("button"))return;drag=true;sx=e.clientX;dx=0;top.setPointerCapture(e.pointerId);top.style.transition="none"};
+  top.onpointermove=function(e){if(!drag)return;dx=e.clientX-sx;top.style.transform="translateX("+dx+"px) rotate("+(dx/25)+"deg)";badge(dx)};
+  var up=function(){
+    if(!drag)return;drag=false;top.style.transition="";
+    if(dx>100)commit(1);else if(dx<-100)commit(-1);else{top.style.transform="";badge(0)}
+  };
+  top.onpointerup=up;top.onpointercancel=up;
+  top.onclick=function(){if(cover&&Math.abs(dx)<6)top.classList.toggle("show")};
+  st.appendChild(top);
+}
+$("send").onclick=function(){if(sbusy)return;sess=null;save();renderStudy()};
+var wt;
+$("wreset").onclick=function(){
+  var btn=this;
+  if(btn.dataset.arm){W={};sess=null;btn.dataset.arm="";btn.textContent="Reset";save();if(mode==="study")renderStudy()}
+  else{btn.dataset.arm="1";btn.textContent="Tap to confirm";clearTimeout(wt);wt=setTimeout(function(){btn.dataset.arm="";btn.textContent="Reset"},3000)}
+};
+
+/* modes */
+function updPill(){var n=Object.keys(selMap).length;$("decktxt").textContent="Studying "+n+" of "+ALL.length+" cards"}
+function setMode(m,restore){
+  mode=m;
+  var empty=!deck(rorder).length;
+  $("empty").hidden=!empty;
+  $("fcview").hidden=empty||m!=="fc";list.hidden=empty||m!=="rev";$("studyview").hidden=empty||m!=="study";
+  ["rev","fc","study"].forEach(function(k){var t=$("tab"+k);t.classList.toggle("on",k===m);t.setAttribute("aria-selected",k===m)});
+  updPill();
+  if(empty)$("count").innerHTML="<span>0 cards</span>";
+  else if(m==="rev"){$("count").innerHTML="<span>"+deck(rorder).length+" phrases</span>";window.scrollTo(0,restore?scrollY0:0)}
+  else if(m==="fc"){render();window.scrollTo(0,0)}
+  else{renderStudy();window.scrollTo(0,0)}
+  save();
+}
+$("tabrev").onclick=function(){setMode("rev")};
+$("tabfc").onclick=function(){setMode("fc")};
+$("tabstudy").onclick=function(){setMode("study")};
+var st0;window.addEventListener("scroll",function(){if(mode!=="rev")return;clearTimeout(st0);st0=setTimeout(function(){scrollY0=Math.round(window.scrollY);save()},200)});
+function refreshAll(){
+  forder=recon(forder);rorder=recon(rorder);pos=0;flipped=false;sess=null;
+  buildList();setMode(mode);
+}
+
+/* settings dialog */
+$("scrtg").checked=scripts;
+$("scrtg").onchange=function(){scripts=this.checked;save();buildList();setMode(mode)};
+function applyCover(){list.classList.toggle("cover",cover);$("stack").classList.toggle("cover",cover);$("cover").checked=cover;[].slice.call(list.querySelectorAll(".item")).forEach(function(i){i.classList.remove("show")})}
+$("cover").onchange=function(){cover=this.checked;applyCover();save()};
+$("menu").onclick=function(){$("dlg").showModal()};
+$("done").onclick=function(){$("dlg").close()};
+$("dlg").addEventListener("click",function(e){if(e.target===this)this.close()});
+
+/* deck dialog */
+function catCards(cat){return ALL.filter(function(c){return (CATS.indexOf(c.cat)>=0?c.cat:"My cards")===cat})}
+function updateCounts(){
+  [].slice.call($("dtabs").children).forEach(function(b){
+    var cs=catCards(b.dataset.cat),n=cs.filter(function(c){return selMap[c.id]}).length;
+    b.innerHTML=esc(b.dataset.cat)+"<small>"+n+"/"+cs.length+"</small>";
+  });
+  var n=Object.keys(selMap).length;
+  $("dcount").textContent=n+" of "+ALL.length+" cards selected";
+  $("deckdone").disabled=n===0;
+  updPill();
+}
+function setCat(cs,on){cs.forEach(function(c){if(on)selMap[c.id]=true;else delete selMap[c.id]});dirty=true;save();renderDeck()}
+function renderDeck(){
+  var tabs=$("dtabs");tabs.innerHTML="";
+  CATS.forEach(function(cat){
+    var b=document.createElement("button");b.className="dt"+(cat===deckTab?" on":"");b.dataset.cat=cat;
+    b.setAttribute("role","tab");b.setAttribute("aria-selected",cat===deckTab);b.tabIndex=cat===deckTab?0:-1;
+    b.onclick=function(){deckTab=cat;addOpen=false;deckMsg="";renderDeck();$("dpanel").scrollTop=0};
+    tabs.appendChild(b);
+  });
+  var P=$("dpanel"),cs=catCards(deckTab);P.innerHTML="";
+  var bar=document.createElement("div");bar.className="dbar";
+  bar.innerHTML="<button id='dall'>Select all</button><button id='dnone'>Clear</button><span class='grow'></span><button id='dadd' class='solid'>+ Add card</button>";
+  P.appendChild(bar);
+  $("dall").onclick=function(){setCat(cs,true)};
+  $("dnone").onclick=function(){setCat(cs,false)};
+  $("dadd").onclick=function(){addOpen=true;deckMsg="";renderDeck();$("fen").focus()};
+  $("dall").disabled=$("dnone").disabled=!cs.length;
+  if(deckMsg){var m=document.createElement("p");m.className="ok";m.setAttribute("role","status");m.textContent=deckMsg;P.appendChild(m)}
+  if(addOpen){
+    var f=document.createElement("div");f.className="addf";
+    f.innerHTML="<label>English<input id='fen' autocomplete='off'></label><label>Japanese<input id='fjp' lang='ja' autocomplete='off'></label><label>Romaji (optional)<input id='fro' autocomplete='off'></label><p class='err' id='ferr' role='alert' hidden></p><div class='fb'><button id='fcancel'>Cancel</button><button id='fadd' class='solid'>Add to "+esc(deckTab)+"</button></div>";
+    P.appendChild(f);
+    $("fcancel").onclick=function(){addOpen=false;renderDeck()};
+    $("fadd").onclick=addCard;
+    [].slice.call(f.querySelectorAll("input")).forEach(function(i){i.onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();addCard()}}});
+  }
+  cs.forEach(function(c){
+    var row=document.createElement("label");row.className="crow";
+    var cb=document.createElement("input");cb.type="checkbox";cb.checked=!!selMap[c.id];
+    cb.onchange=function(){if(cb.checked)selMap[c.id]=true;else delete selMap[c.id];dirty=true;save();updateCounts()};
+    var tx=document.createElement("span");tx.className="ct";
+    tx.innerHTML="<span class='ce'></span><span class='cj'></span>";
+    tx.querySelector(".ce").textContent=c.en;tx.querySelector(".cj").textContent=c.jp;
+    row.appendChild(cb);row.appendChild(tx);
+    if(c.custom){
+      var del=document.createElement("button");del.className="del";del.textContent="Remove";del.setAttribute("aria-label","Remove "+c.en);
+      var t;
+      del.onclick=function(e){
+        e.preventDefault();e.stopPropagation();
+        if(del.classList.contains("arm")){removeCard(c.id);return}
+        del.classList.add("arm");del.textContent="Sure?";clearTimeout(t);t=setTimeout(function(){del.classList.remove("arm");del.textContent="Remove"},3000);
+      };
+      row.appendChild(del);
+    }
+    P.appendChild(row);
+  });
+  if(!cs.length&&!addOpen){var e=document.createElement("p");e.className="muted";e.textContent="No cards here yet. Use “Add card” to create your own.";P.appendChild(e)}
+  updateCounts();
+}
+function addCard(){
+  var en=$("fen").value.trim(),jp=$("fjp").value.trim(),ro=$("fro").value.trim(),err=$("ferr");
+  if(!en||!jp){err.hidden=false;err.textContent=!en?"Enter the English meaning.":"Enter the Japanese.";(!en?$("fen"):$("fjp")).focus();return}
+  var c={id:"c"+Date.now().toString(36)+Math.floor(Math.random()*1000),cat:deckTab,en:en,pr:"",ro:ro,jp:jp,hi:isKana(jp)?toHira(jp):"",custom:true};
+  custom.push(c);rebuild();selMap[c.id]=true;forder.push(c.id);rorder.push(c.id);
+  dirty=true;addOpen=false;deckMsg="Added “"+en+"”.";save();renderDeck();
+}
+function removeCard(id){
+  custom=custom.filter(function(c){return c.id!==id});rebuild();
+  delete selMap[id];delete W[id];forder=recon(forder);rorder=recon(rorder);
+  dirty=true;deckMsg="Card removed.";save();renderDeck();
+}
+function openDeck(){addOpen=false;deckMsg="";renderDeck();$("deckdlg").showModal()}
+$("deckbtn").onclick=openDeck;$("emptybtn").onclick=openDeck;
+$("deckdone").onclick=function(){$("deckdlg").close()};
+$("deckx").onclick=function(){$("deckdlg").close()};
+$("deckdlg").addEventListener("click",function(e){if(e.target===this)this.close()});
+$("deckdlg").addEventListener("close",function(){if(dirty){dirty=false;refreshAll()}});
+$("dtabs").addEventListener("keydown",function(e){
+  if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return;
+  var i=CATS.indexOf(deckTab)+(e.key==="ArrowRight"?1:-1);if(i<0||i>=CATS.length)return;
+  deckTab=CATS[i];addOpen=false;deckMsg="";renderDeck();$("dtabs").children[i].focus();
+});
+
+/* init */
+loadVoices();
+if(window.speechSynthesis)window.speechSynthesis.addEventListener("voiceschanged",loadVoices);
+syncSpeed();syncRev();applyCover();
+buildList();setMode(mode,true);
+</script>
+</body>
+</html>
