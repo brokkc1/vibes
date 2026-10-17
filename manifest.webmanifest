@@ -1,0 +1,13 @@
+{
+  "name": "Japanese Phrasebook",
+  "short_name": "Phrasebook",
+  "description": "Phrasebook, flashcards and study sessions for travel Japanese.",
+  "start_url": "./japanese-learning.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#e9edf0",
+  "theme_color": "#0a7a5a",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
